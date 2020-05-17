@@ -19,8 +19,8 @@
  *    'Tue, 26 Jan 2016 13:48:02 GMT' => Date()
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
-function parseDataFromRfc2822(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromRfc2822(value) {
+  return Date.parse(value);
 }
 
 /**
@@ -34,8 +34,8 @@ function parseDataFromRfc2822(/* value */) {
  *    '2016-01-19T16:07:37+00:00'    => Date()
  *    '2016-01-19T08:07:37Z' => Date()
  */
-function parseDataFromIso8601(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromIso8601(value) {
+  return Date.parse(value);
 }
 
 
@@ -53,8 +53,13 @@ function parseDataFromIso8601(/* value */) {
  *    Date(2012,1,1)    => true
  *    Date(2015,1,1)    => false
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const year = date.getFullYear();
+
+  if (year % 4 !== 0) { return false; }
+  if (year % 100 !== 0) { return true; }
+  if (year % 400 !== 0) { return false; }
+  return true;
 }
 
 
@@ -73,8 +78,16 @@ function isLeapYear(/* date */) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,0,250)     => "00:00:00.250"
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
-function timeSpanToString(/* startDate, endDate */) {
-  throw new Error('Not implemented');
+function timeSpanToString(startDate, endDate) {
+  let delta = endDate.getTime() - startDate.getTime();
+  const hours = `0${Math.floor(delta / (1000 * 60 * 60))}`.slice(-2);
+  delta -= hours * 60 * 60 * 1000;
+  const minutes = `0${Math.floor(delta / (1000 * 60))}`.slice(-2);
+  delta -= minutes * 60 * 1000;
+  const seconds = `0${Math.floor(delta / (1000))}`.slice(-2);
+  delta -= seconds * 1000;
+  const miliseconds = `00${delta}`.slice(-3);
+  return `${hours}:${minutes}:${seconds}.${miliseconds}`;
 }
 
 
@@ -82,8 +95,6 @@ function timeSpanToString(/* startDate, endDate */) {
  * Returns the angle (in radians) between the hands of an analog clock
  * for the specified Greenwich time.
  * If you have problem with solution please read: https://en.wikipedia.org/wiki/Clock_angle_problem
- *
- * SMALL TIP: convert to radians just once, before return in order to not lost precision
  *
  * @param {date} date
  * @return {number}
@@ -94,8 +105,13 @@ function timeSpanToString(/* startDate, endDate */) {
  *    Date.UTC(2016,3,5,18, 0) => Math.PI
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function angleBetweenClockHands(/* date */) {
-  throw new Error('Not implemented');
+function angleBetweenClockHands(date) {
+  const minutes = date.getUTCMinutes();
+  let hours = date.getUTCHours();
+  if (hours > 12) hours -= 12;
+  let delta = 60 * hours - 11 * minutes;
+  if (delta > 360) delta = Math.abs(delta) - 360;
+  return (0.5 * Math.abs(delta) * Math.PI) / 180;
 }
 
 
